@@ -1,6 +1,6 @@
 # aWhere Code Samples
 
-These code samples are designed to run "out of the box." We currently have C# and PHP samples, and will be adding more languages soon. Feel free to fork and contribute back!
+These code samples are designed to run "out of the box." We are building out code samples in multiple languages, so "watch" this repo for updates (or feel free to fork and contribute your own). 
 
 ## Help
 
