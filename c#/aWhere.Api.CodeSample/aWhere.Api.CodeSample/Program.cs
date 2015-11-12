@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Net.Http;
@@ -6,7 +7,6 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace aWhere.Api.CodeSample {
     internal class Program {
@@ -18,15 +18,13 @@ namespace aWhere.Api.CodeSample {
  * **************************************************************************
  */
 #region Constants
-        public const string API_KEY = "NSyRiHrpF2qYwtfhGQBzRByALGpZrujB";
-        public const string API_SECRET = "XLjwaAVphGrydJLA";
+        public const string API_KEY = "";
+        public const string API_SECRET = "";
         public const String HOST = "https://api.awhere.com";
-        public static readonly String OAUTHTOKEN = GetOAuthToken(API_KEY, API_SECRET).Result;
+        public static readonly string OAUTHTOKEN = GetOAuthToken(API_KEY, API_SECRET).Result;
 #endregion Constants
 
-
 #region Methods
-
 
 /// <summary>
 /// Uses the Token API to retrieve an access token.
@@ -45,8 +43,8 @@ private async static Task<String> GetOAuthToken(string api_key, string api_secre
                 httpClient.DefaultRequestHeaders.Accept.Clear();
 
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(API_KEY + ":" + API_SECRET)));
+                string encodedString = Convert.ToBase64String(Encoding.UTF8.GetBytes(API_KEY+":"+API_SECRET));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedString);
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(new[]
                 {
@@ -57,18 +55,13 @@ private async static Task<String> GetOAuthToken(string api_key, string api_secre
 
                 if (response.IsSuccessStatusCode) {
                     dynamic jsonResponse = await response.Content.ReadAsAsync<ExpandoObject>();
-                    oauthToken =  (String)jsonResponse.access_token;//"2lNcVCeSrQPHx6rnnw4JA8gslIqs";
+                    oauthToken = (string)jsonResponse.access_token;
+                    oauthToken = oauthToken.Trim();
                 }
             }
 
             return oauthToken;
         }
-
-
-
-
-
-   
 
         private static void Main(string[] args) {
             Console.WriteLine("Select a request option");
@@ -106,10 +99,6 @@ private async static Task<String> GetOAuthToken(string api_key, string api_secre
                 jsonResponse = MakeAPICall("GET", queryString, null).Result;
             }
 
-            
-
-    
-            
             Console.WriteLine(jsonResponse);
 
             Console.WriteLine();
@@ -137,11 +126,11 @@ private async static Task<String> GetOAuthToken(string api_key, string api_secre
                     case "GET":
                         response = await httpClient.GetAsync(url);
                         break;
-                        //TODO: add POST
+
                     case "POST":
                         response = await httpClient.PostAsJsonAsync<string>(url, payload);
                         break;
-                   
+
                     default:
                         response = await httpClient.GetAsync(url);
                         break;
