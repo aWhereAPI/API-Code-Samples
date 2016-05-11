@@ -21,23 +21,23 @@ namespace aWhere.Api.CodeSample {
         public static int endYear = DateTime.Today.Year - 1;
 
         public static string BuildObservationsUrl() {
-            string url = Program.HOST + "/v2/weather/fields/" + Fields.NEW_FIELD_ID + "/observations/" + observedStartDate + "," + observedEndDate;
+            string url = Program.HOST + "/v2/weather/fields/" + Field.NEW_FIELD_ID + "/observations/" + observedStartDate + "," + observedEndDate;
             return url;
         }
 
         public static string BuildForecastsUrl() {
-            string url = Program.HOST + "/v2/weather/fields/" + Fields.NEW_FIELD_ID + "/forecasts/" + forecastStartDate + "," + forecastEndDate;
+            string url = Program.HOST + "/v2/weather/fields/" + Field.NEW_FIELD_ID + "/forecasts/" + forecastStartDate + "," + forecastEndDate;
 
             return url;
         }
 
         public static string BuildThreeYearNormsUrl() {
-            string url = Program.HOST + "/v2/weather/fields/" + Fields.NEW_FIELD_ID + "/norms/" + monthDayStart + "," + monthDayEnd + "/years/" + threeYearStartYear + "," + endYear;
+            string url = Program.HOST + "/v2/weather/fields/" + Field.NEW_FIELD_ID + "/norms/" + monthDayStart + "," + monthDayEnd + "/years/" + threeYearStartYear + "," + endYear;
             return url;
         }
 
         public static string BuildTenYearNormsUrl() {
-            string url = Program.HOST + "/v2/weather/fields/" + Fields.NEW_FIELD_ID + "/norms/" + monthDayStart + "," + monthDayEnd + "/years/" + tenYearStartYear + "," + endYear;
+            string url = Program.HOST + "/v2/weather/fields/" + Field.NEW_FIELD_ID + "/norms/" + monthDayStart + "," + monthDayEnd + "/years/" + tenYearStartYear + "," + endYear;
             return url;
         }
 
