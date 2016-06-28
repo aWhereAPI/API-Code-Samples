@@ -16,10 +16,19 @@ namespace aWhere.Api.Business {
 
         #region Methods
 
-        public string GenerateRandomString() {
-            string path = Path.GetRandomFileName();
-            path = path.Replace(".", ""); // Remove the period
-            return path;
+        public string GenerateRandomFieldName() {
+            StringBuilder baseName = new StringBuilder();
+            baseName.Append("DemoField-");
+
+            // Generate random number
+            Random randomNum = new Random(DateTime.Now.Millisecond);
+            string randomNumber = randomNum.Next().ToString();
+
+            // Combine the base name and the random number, then cast to String
+            baseName.Append(randomNumber);
+            string completedName = baseName.ToString();
+
+            return completedName;
         }
 
         #endregion Methods
