@@ -47,21 +47,26 @@ namespace aWhere.Api.Business {
 
         public Field BuildRandomField() {
             Menus.PrintEachLetterToConsole("Generating random Field.....");
-            Field defaultField = new Field();
-            defaultField.id = defaultField.GenerateRandomString();
-            defaultField.name = defaultField.id;
-            defaultField.farmId = NEW_FIELD_FARM_ID;
-            defaultField.acres = NEW_FIELD_ACRES;
-            defaultField.centerPoint = new CenterPoint(NEW_FIELD_LATITUDE, NEW_FIELD_LONGITUDE);
-            Menus.PrintEachLetterToConsole(String.Format("Field ID: {0,-20}", defaultField.id));
-            Menus.PrintEachLetterToConsole(String.Format("Field Name: {0,-20}", defaultField.name));
-            Menus.PrintEachLetterToConsole(String.Format("Field Farm ID: {0,-20}", defaultField.farmId));
-            Menus.PrintEachLetterToConsole(String.Format("Field Acres: {0,-20}", defaultField.acres));
-            Menus.PrintEachLetterToConsole(String.Format("Field Latitude: {0,-20}", defaultField.centerPoint.Latitude));
-            Menus.PrintEachLetterToConsole(String.Format("Field Longitude: {0,-20}", defaultField.centerPoint.Longitude));
+            
+            Field demoField = new Field()
+            {
+                id = GenerateRandomFieldName(),
+                farmId = NEW_FIELD_FARM_ID,
+                acres = NEW_FIELD_ACRES,
+                centerPoint = new CenterPoint(NEW_FIELD_LATITUDE, NEW_FIELD_LONGITUDE)
+            };
+
+            demoField.name = demoField.id;
+
+            Menus.PrintEachLetterToConsole(String.Format("Field ID: {0,-20}", demoField.id));
+            Menus.PrintEachLetterToConsole(String.Format("Field Name: {0,-20}", demoField.name));
+            Menus.PrintEachLetterToConsole(String.Format("Field Farm ID: {0,-20}", demoField.farmId));
+            Menus.PrintEachLetterToConsole(String.Format("Field Acres: {0,-20}", demoField.acres));
+            Menus.PrintEachLetterToConsole(String.Format("Field Latitude: {0,-20}", demoField.centerPoint.Latitude));
+            Menus.PrintEachLetterToConsole(String.Format("Field Longitude: {0,-20}", demoField.centerPoint.Longitude));
             Console.WriteLine();
 
-            return defaultField;
+            return demoField;
         }
 
         #endregion Methods
