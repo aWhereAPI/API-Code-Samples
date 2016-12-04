@@ -4,8 +4,7 @@ from datetime import timedelta
 #Test variables
 
 #Key, secret
-api_key = ""
-api_secret = ""
+from main import api_key, api_secret
 
 #These variables are used for creating data later in the sample script. 
 new_field_id 			= 'mynewfield' 

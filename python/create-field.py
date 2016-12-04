@@ -2,8 +2,8 @@ import header
 import string
 import json
 
-api_key = ''
-api_secret = ''
+from main import api_key, api_secret
+
 url = 'https://api.awhere.com/v2/fields'
 
 print "<h1>Get Access Token</h1>"
@@ -73,7 +73,7 @@ else if statusCode == 409 :
 
 	print "<p>A field with ID ",new_field_id," already exists in your account, so it could not be created again.</p>" 
 	
-else 
+else:
 	print "<p>ERROR: ",statusCode," - ",response.simpleMessage,"<br>"
 	print response.detailedMessage,"</p>"
 

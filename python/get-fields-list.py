@@ -2,8 +2,8 @@ import header
 import string
 import json
 
-api_key = ''
-api_secret = ''
+from main import api_key, api_secret
+
 url = 'https://api.awhere.com/v2/fields'
 
 print "<h1>Get Access Token</h1>"
@@ -37,7 +37,7 @@ if statusCode == 200 :
 #print  stripslashes(json_encode(response,JSON_PRETTY_PRINT)); 	//Note: Stripslashes() is used just for prettier 
 	print "</pre>" 	
 
-else 
+else:
 	print "<p>ERROR: ",statusCode," - ",response.simpleMessage,"<br>"
 	print response.detailedMessage,"</p>"
 
