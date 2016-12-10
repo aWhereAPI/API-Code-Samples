@@ -157,4 +157,5 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 #python builds
+python/
 *.pyc
