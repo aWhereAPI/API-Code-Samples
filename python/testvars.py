@@ -1,25 +1,21 @@
 import datetime
-from datetime import timedelta
+import json
 
-#Test variables
+# The below dict is the valid jason required for the body in creation.
+# Constraints and other info at 
+# http://developer.awhere.com/api/reference/fields/create-field
+test_field_json_load = json.dumps({
+                                    "id": 'mynewfield' ,
+                                    "name": 'My New Field',
+                                    "farmId": 'F-1234-14-B',
+                                    "acres": 120,
+                                    "centerPoint":{
+                                        "latitude": 39.8282,
+                                        "longitude": -98.5795,
+                                        }
+                                })
 
-#Key, secret
-api_key = ""
-api_secret = ""
 
-#These variables are used for creating data later in the sample script. 
-new_field_id 			= 'mynewfield' 
-new_field_name 			= "My New Field" 
-new_field_farm_id 		= 'F-1234-14-B' 
-new_field_latitude 		= 39.8282
-new_field_longitude 	        = -98.5795 
-new_field_acres 		= 120 
 
-observed_weather_start          = "2015-07-24"
-observed_weather_end            = "2015-07-31" 
-
-forecast_start                  = datetime.date.today()
-forecast_end                    = forecast_start + timedelta(days = 3)
-
-forecast_weather_start          = forecast_start.strftime('%Y-%m-%d') 
-forecast_weather_end            = forecast_end.strftime('%Y-%m-%d')
+forecast_start = str(datetime.date.today() + datetime.timedelta(days = -8))
+forecast_end = str(datetime.date.today() + datetime.timedelta(days = -1))

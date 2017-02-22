@@ -5,7 +5,7 @@ import base64
 import string
 import json
 
-host = "http://api.awhere.com"
+host = "http://api.awhere.com:80"
 
 def GetOAuthToken(key, secret):
 	conn = httplib.HTTP(host)
@@ -64,7 +64,7 @@ def parseHTTPHeaders(raw, desired, returnType = 'string'):
 			
 	if returnType == 'string':
 		return ",".join(parsedHeaders)
-	else 
+	else:
 		return parsedHeaders
 		
 		

@@ -155,3 +155,7 @@ UpgradeLog*.htm
 *.bim_*.settings
 # Microsoft Fakes
 FakesAssemblies/
+
+#python builds
+python/
+*.pyc
