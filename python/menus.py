@@ -1,8 +1,17 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import int
+from builtins import input
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import os
 import platform
 
 
-class Menus:
+class Menus(object):
     def __init__(self, clear='clear', readLine='read'):
         # Set the clear and pause command based on the running OS
         self.clear = clear

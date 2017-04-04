@@ -1,3 +1,12 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from builtins import bytes
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import requests as rq
 import base64
 import pprint
@@ -6,7 +15,7 @@ import random
 from menus import Menus
 
 
-class AWhereAPI:
+class AWhereAPI(object):
     def __init__(self, api_key, api_secret):
         """
         Initializes the AWhereAPI class, which is used to perform HTTP requests 
