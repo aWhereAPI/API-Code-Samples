@@ -22,7 +22,6 @@ def user_has_credentials():
     return isValid
 
 def handle_user_input(user_input, aWhere):
-    #print('\n\n')
     global quit_requested
     if user_input == 1:
         aWhere.get_fields()
@@ -48,9 +47,9 @@ menu = Menus()
 api_key = '' 
 api_secret = '' 
 
+# Main Entry Point 
 if user_has_credentials():
-    aWhere = AWhereAPI(api_key, api_secret) # The AWhereAPI class
-    # Main Entry Point 
+    aWhere = AWhereAPI(api_key, api_secret)
     menu.display_title()
 
     while not quit_requested:

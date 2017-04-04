@@ -70,8 +70,8 @@ class Menus(object):
     def display_menu(self):
         print('\n')
         print('Please input one of the following options and then press "Enter"\n')
-        print('\t 1. [GET] Get all Fields associated with your account')
-        print('\t 2. [GET] Get Weather for an existing field')
+        print('\t 1. [GET] Get all fields associated with your account')
+        print('\t 2. [GET] Get Weather (Forecast, Norms and Observations) for an existing field')
         print('\t 3. [POST] Create a test field')
         print('\t 4. [DELETE] Delete a field')
         print('\t 0. Quit ')
