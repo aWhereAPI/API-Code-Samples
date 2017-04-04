@@ -5,7 +5,7 @@
 * Requests: The `requests` library is used for making HTTP requests in Python
 
 ```
-$ pip install requests
+$ pip install requests future
 ```
 
 2. Clone this repo
