@@ -16,16 +16,20 @@ def user_has_credentials():
     return isValid
 
 def handle_user_input(user_input, aWhere):
-    #print('User entered %d' % user_input)
+    #print('\n\n')
     global quit_requested
     if user_input == 1:
         aWhere.get_fields()
     elif user_input == 2:
-        pass
+        aWhere.get_fields()
+        field_id = menu.get_weather_field_id()
+        aWhere.get_weather_by_id(field_id)
     elif user_input == 3:
         aWhere.create_test_field()
     elif user_input == 4:
-        pass
+        aWhere.get_fields()
+        field_id = menu.get_delete_field_id()
+        aWhere.delete_field_by_id(field_id)
     elif user_input == 0:
         quit_requested = True    
     else:
@@ -46,4 +50,6 @@ if user_has_credentials():
     while not quit_requested:
         menu.display_menu()
         user_input = menu.get_user_input()
+        menu.clear_screen()
         handle_user_input(user_input, aWhere)
+        
