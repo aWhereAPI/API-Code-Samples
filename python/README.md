@@ -1,9 +1,10 @@
 # aWhere API Python Sample Application
 
 ## Getting started
-1. Install dependencies
+1. Install Python and dependencies
+* Python: https://www.python.org/downloads/
 * Requests: The `requests` library is used for making HTTP requests in Python
-
+* Futures: The 'futures' library is used for backwards compatibility between Python 2 and 3
 ```
 $ pip install requests future
 ```
