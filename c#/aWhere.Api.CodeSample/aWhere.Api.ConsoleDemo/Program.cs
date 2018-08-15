@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using aWhere.Api.Services;
 
@@ -41,6 +42,9 @@ namespace aWhere.Api.ConsoleDemo {
         }
 
         private static async Task MainAsync() {
+            //Specify TLS 1.2, which is required.  See http://developer.awhere.com/api/calling-api-tls-12
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             Program app = new Program();
             Menus.DisplayStartupMenu();
             app.AuthenticateUser(API_KEY, API_SECRET); // Enter your API Keys in the "Constants" region above
