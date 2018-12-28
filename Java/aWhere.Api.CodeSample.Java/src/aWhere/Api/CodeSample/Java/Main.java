@@ -5,8 +5,8 @@ import java.net.http.*;
 
 public class Main {
 
-	public final static String API_KEY = "GWdvtxJ8d0hZG3bWA6040bFs4sZreh2X";
-	public final static String API_SECRET = "7H00CXxsHSXDY6aV";
+	public final static String API_KEY = "";
+	public final static String API_SECRET = "";
 	
 	
 	public static void main(String[] args) {
