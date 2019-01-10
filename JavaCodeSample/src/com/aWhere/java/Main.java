@@ -29,6 +29,7 @@ public class Main {
 		loadKeyAndSecret();
 		if(!checkForKeyAndSecret()) {
 			System.out.println("!#!->API Key and Secret not configured. Aborting.<-!#!");
+			pressToContinue();
 			System.exit(0);
 		}
 		System.out.println("--------------------------------------------------");
@@ -87,7 +88,7 @@ public class Main {
 		System.out.println("[0] Exit Program");
 		String in = input.nextLine();
 		System.out.flush();
-		in = (in.isBlank()) ? "999" : in;
+		in = (in.isEmpty()) ? "999" : in;
 		int out = Integer.parseInt(in);
 		if(out < 0 || out > 5) {
 			System.out.println("[ Incorrect Input ]");
