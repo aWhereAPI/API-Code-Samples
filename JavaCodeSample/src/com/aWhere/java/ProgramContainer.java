@@ -1,5 +1,7 @@
 package com.aWhere.java;
 
+//TODO: Hardcode lat/long, 5th option to auto generate, aggregate by 24 hours
+
 import org.json.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,8 +22,6 @@ import java.util.Scanner;
 public class ProgramContainer {
 
 	public static final String HOST = "https://api.awhere.com";
-	
-	URL url;
 	
 	private Map<String, String> parameters;
 	private HttpURLConnection connection;
@@ -51,25 +51,25 @@ public class ProgramContainer {
 		request = x;
 	}
 	
-	/* Connects to https://api.awhere.com/oauth/token and receives an oauth token with the secret and key.
-	 * 1: Authentication passed
-	 * 0: Exception was caught, authentication failed
+	/* boolean authenticate()
+	 * Connects to https://api.awhere.com/oauth/token and receives an oauth token with the secret and key.
+	 * Returns true if an ouath token was successfully received
 	 */	
 	public boolean authenticate() {
 		String auth_att = key + ":" + secret;
 		Base64.Encoder encoder = Base64.getEncoder();
 		String encoded = encoder.encodeToString(auth_att.getBytes(StandardCharsets.UTF_8));
 		try {
-			url = new URL(HOST+"/oauth/token"); //The URL to post for an oauth token
+			URL url = new URL(HOST+"/oauth/token");
 			System.out.println("Communicating with -> " + HOST + "/oauth/token");
 			connection = (HttpURLConnection) url.openConnection();
 			System.out.println("Connection established");
 			
 			connection.setRequestMethod("POST");
-			connection.setDoOutput(true); //can write to stream
-			connection.setDoInput(true); //can receive reply stream
-			connection.setRequestProperty("Authorization","Basic "+encoded); //encode our secret and key
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); //set content type
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Authorization","Basic "+encoded);
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			connection.connect();
 			
 			OutputStream out = connection.getOutputStream();
@@ -80,8 +80,7 @@ public class ProgramContainer {
 			out.close();
 			
 			System.out.println("Response received: \""+connection.getResponseMessage() + "\", With code: "+connection.getResponseCode());
-			
-			//Build a bufferedreader to interpret the bufferedinputstream
+
 			Reader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
 			JSONObject json = formatInputStream(in);
 			oAuthToken = (String) json.get("access_token");
@@ -89,14 +88,17 @@ public class ProgramContainer {
 			System.out.println("-> Oauth Token Request received.\n-> OAuth Token: "+oAuthToken);
 			System.out.println("========================================================");
 			return isAuthenticated = true;
-			//Catch all exceptions, not a good practice but the scope of possible exceptions is very limited.
-			} catch(Exception e) {
+		} catch(Exception e) {
 			System.out.println("Error creating connection to host. Incorrect URL or HTTP Protocol.");
 			e.printStackTrace();
 			return isAuthenticated = false;
 		}
 	}
 	
+	/* boolean getFields()
+	 * Returns true if successfully connected. Uses setRequest() and getResponse() to receive connection results.
+	 * This method just formats and prints the JSON response from the GET request. 
+	 */
 	public boolean getFields() {
 		setRequest("/v2/fields");
 		JSONObject json = getResponse();
@@ -120,8 +122,13 @@ public class ProgramContainer {
 		return true;
 	}
 	
+	
+	/* boolean getDailyObservations()
+	 * Returns true if successfully connected. Uses setRequest() and getResponse() to receive connection results.
+	 * This method just formats and prints the JSON response from the GET request. 
+	 */
 	public boolean getDailyObservations() {
-		setRequest("/v2/weather/fields/field1/observations");
+		setRequest("/v2/weather/locations/44.390948,-110.604528/observations");
 		JSONObject json = getResponse();
 		if(json == null)
 			return false;
@@ -129,13 +136,12 @@ public class ProgramContainer {
 		Iterator<Object> i = observations.iterator();
 		DecimalFormat temp = new DecimalFormat("#.000");
 		System.out.println("========================================================");
+		System.out.println("Yellowstone National Park Observations: ");
 		while(i.hasNext()) {
 			JSONObject j = (JSONObject) i.next();
 			System.out.println("Date: "+j.get("date"));
 			System.out.println("--------------------");
-			System.out.println("Field: ID "+j.getJSONObject("location").get("fieldId"));
-			System.out.println("            Latitude: "+j.getJSONObject("location").get("latitude"));
-			System.out.println("            Longitude: "+j.getJSONObject("location").get("longitude"));
+			System.out.println("Latitude: "+j.getJSONObject("location").get("latitude") + ",	Longitude: " + j.getJSONObject("location").get("longitude"));
 			System.out.println("Temperature Max: "+temp.format(j.getJSONObject("temperatures").getDouble("max")));
 			System.out.println("            Min: "+temp.format(j.getJSONObject("temperatures").getDouble("min")));
 			System.out.println("Relative Humidity Max: "+temp.format(j.getJSONObject("relativeHumidity").getDouble("max")));
@@ -148,69 +154,110 @@ public class ProgramContainer {
 		return true;
 	}
 	
+	/* boolean getForecast()
+	 * Returns true if successfully connected. Uses setRequest() and getResponse() to receive connection results.
+	 * This method just prints formatted results from the JSON response of the forecast. This gives a good example of how easy 
+	 * the API responses are to parse given the right tools - namely a JSON library in this case. 
+	 */
 	public boolean getForecast() {
-		setRequest("/v2/weather/fields/field1/forecasts");
+		setRequest("/v2/weather/locations/44.390948,-110.604528/forecasts?blockSize=24");
 		JSONObject json = getResponse();
 		if(json == null)
 			return false;
-		Scanner input = new Scanner(System.in);
 		JSONArray forecasts = json.getJSONArray("forecasts");
-		int in = 1;
-		int num = 0;
-		System.out.println("How many hours per day to forecast? (Starting from 8AM - Default 8AM - 5PM)");
-		num = input.nextInt();
-		int index = 0;
-		while(in != 0 && index <= 8) {
+		Iterator<Object> iter = forecasts.iterator();
+		System.out.println("========================================================");
+		System.out.println("Yellowstone National Park Forecast: ");
+		while(iter.hasNext()) {
 			System.out.println("--------------------");
-			JSONObject forecast = forecasts.getJSONObject(index);
+			JSONObject forecast = (JSONObject) iter.next();
 			JSONArray data = forecast.getJSONArray("forecast");
 			System.out.println("Forecast Date:		" + forecast.getString("date"));
-			System.out.println("Forecast Field: 	" + forecast.getJSONObject("location").getString("fieldId"));
-			for(int i = 8; i <= 8+num; i++) {
-				if(i == data.length())
-					break;
-				System.out.println("	--(Hour: 	"+data.getJSONObject(i).getString("startTime").substring(11, 16)+")--");
-				System.out.println("		Conditions:		"+data.getJSONObject(i).getString("conditionsText"));
-				System.out.println("		Wind Speed:		"+data.getJSONObject(i).getJSONObject("wind").get("average")+" m/s");
-				System.out.println("		Wind Speed:		"+data.getJSONObject(i).getJSONObject("relativeHumidity").get("average"));
-				System.out.println("		Precip Chance:	"+data.getJSONObject(i).getJSONObject("precipitation").get("chance"));
-				System.out.println("		Temperature:	"+data.getJSONObject(i).getJSONObject("temperatures").getFloat("value")+" C");
-			}
-			if(index  >= 8)
-				break;
-			System.out.println("--- Print Next Day Forecast? (1 Yes | 0 No ) ---");
-			in = input.nextInt();
-			index++;
+			System.out.println("Forecast Location: 	Latitude: " + forecast.getJSONObject("location").get("latitude") + "	Longitude: " + forecast.getJSONObject("location").get("longitude"));
+			System.out.println("		Conditions:		"+data.getJSONObject(0).getString("conditionsText"));
+			System.out.println("		Wind Speed:		"+data.getJSONObject(0).getJSONObject("wind").get("average")+" m/s");
+			System.out.println("		Wind Speed:		"+data.getJSONObject(0).getJSONObject("relativeHumidity").get("average"));
+			System.out.println("		Precip Chance:	"+data.getJSONObject(0).getJSONObject("precipitation").get("chance"));
 		}
-		//Iterator<Object> i = forecast.iterator();
-		/*while(i.hasNext()) {
-			JSONObject current = (JSONObject) i.next();
-			System.out.println("--------------------");
-			System.out.println("From "+current.get("startTime") + "	To " + current.get("endTime"));
-			System.out.println("Current Temperature: "+current.getJSONObject("temperatures").get("value"));
-			System.out.println("		Max: "+current.getJSONObject("temperatures").get("max"));
-			System.out.println("		Min: "+current.getJSONObject("temperatures").get("min"));
-			System.out.println("--------------------");
-		}*/
+		System.out.println("========================================================");
 		return true;
 	}
 
+	/* boolean createAutoField()
+	 * generates a random field, requires no user input. Returns false on exceptions or failure.
+	 */
+	public boolean createAutoField() {
+		if(!isAuthenticated) {
+			System.out.println("!#!->No OAuth Token, cannot connect.<-!#!");
+			return false;
+		}
+		try {
+			URL url = new URL(HOST+"/v2/fields");
+			System.out.println("Communicating with -> " + HOST + "/v2/fields");
+			connection = (HttpURLConnection) url.openConnection();
+			System.out.println("Connection established");
+			
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Authorization","Bearer "+oAuthToken);
+			connection.setRequestProperty("Content-Type", "application/json");
+			
+			JSONObject json = new JSONObject();
+			JSONObject centerPoint = new JSONObject();
+			String autoId = "ID" + (int)(Math.random()*10000);
+			json.put("id", "Field-" + autoId);
+			json.put("name","Generated Field " + autoId);
+			json.put("farmId","Farm-"+autoId);
+			json.put("acres", (int)(Math.random()*100));
+			centerPoint.put("latitude", (int)(Math.random()*100) + Math.random());
+			centerPoint.put("longitude", (int)(Math.random()*100) + Math.random());
+			json.put("centerPoint", centerPoint);
+			System.out.println("JSON of request: \n"+json.toString(4));
+			OutputStream out = connection.getOutputStream();
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+	
+			writer.write(json.toString());
+			writer.flush();
+			writer.close();
+			out.close();
+			connection.connect();
+			
+			System.out.println("Response received: \""+connection.getResponseMessage() + "\", With code: "+connection.getResponseCode());
+			System.out.println("========================================================");
+			switch(connection.getResponseCode()) {
+				case 200: System.out.println("Success"); return true;
+				case 201: System.out.println("The field has been created - try listing all fields on the main menu with [3]."); return true;
+				case 409: System.out.println("This field already exists with given specifications. Please try again."); return false;
+				default: return false;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
+	
+	/* boolean createField()
+	 * Returns true if completed successfully. Sends a POST request to create a new field in the host/v2/fields path.
+	 * Has duplicate code from authenticate() and getRequest() because it has a different request method and requires a JSON body.
+	 */
 	public boolean createField() {
 		if(!isAuthenticated) {
 			System.out.println("!#!->No OAuth Token, cannot connect.<-!#!");
 			return false;
 		}
 		try {
+			//Warning for not closing input - can be ignored for this demo project.
 			Scanner input = new Scanner(System.in);
-			url = new URL(HOST+"/v2/fields"); //The URL to post for an oauth token
+			URL url = new URL(HOST+"/v2/fields");
 			System.out.println("Communicating with -> " + HOST + "/v2/fields");
 			connection = (HttpURLConnection) url.openConnection();
 			System.out.println("Connection established");
 			
 			connection.setRequestMethod("POST");
-			connection.setDoOutput(true); //can write to stream
-			connection.setDoInput(true); //can receive reply stream
-			connection.setRequestProperty("Authorization","Bearer "+oAuthToken); //encode our secret and key
+			connection.setDoOutput(true); 
+			connection.setDoInput(true); 
+			connection.setRequestProperty("Authorization","Bearer "+oAuthToken);
 			connection.setRequestProperty("Content-Type", "application/json");
 			
 			JSONObject json = new JSONObject();
@@ -236,13 +283,13 @@ public class ProgramContainer {
 				centerPoint.put("latitude", lat);
 				centerPoint.put("longitude", lon);
 				json.put("centerPoint", centerPoint);
-			}catch(RuntimeException e){
-				e.printStackTrace();
+			} catch(RuntimeException e) {
+				e.printStackTrace(); //In case variables are passed incorrectly or null
 			}
-			System.out.println("Created JSON: \n"+json.toString(4));
+			System.out.println("JSON of request: \n"+json.toString(4));
 			OutputStream out = connection.getOutputStream();
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
-			//OutputStreamWriter outw = new OutputStreamWriter(out, "UTF-8");
+
 			writer.write(json.toString());
 			writer.flush();
 			writer.close();
@@ -251,15 +298,24 @@ public class ProgramContainer {
 			
 			System.out.println("Response received: \""+connection.getResponseMessage() + "\", With code: "+connection.getResponseCode());
 			System.out.println("========================================================");
-			if(connection.getResponseCode() != 200)
-				return false;
-			
-		}catch(Exception e) {
+			switch(connection.getResponseCode()) {
+				case 200: System.out.println("Success"); return true;
+				case 201: System.out.println("The field has been created - try listing all fields on the main menu with [3]."); return true;
+				case 400: System.out.println("Bad request, make sure you did not use invalid special characters or leave a field blank."); return false;
+				case 409: System.out.println("This field already exists with given specifications. Please try again."); return false;
+				default: return false;
+			}
+		} catch(Exception e) {
 			System.out.println(e.getStackTrace());
 		}
 		return true;
 	}
 	
+	/* JSONObject getResponse()
+	 * Returns a JSONObject from the inputstream of the get request sent.
+	 * setRequest() sets the rest URL and this method initiates the connection if the current instance has been authenticated and a request has been set.
+	 * Much of this code is used multiple times, this method exists to reduce code bloat.
+	 */
 	public JSONObject getResponse() {
 		JSONObject response = null;
 		if(!isAuthenticated) {
@@ -271,28 +327,30 @@ public class ProgramContainer {
 			return null;
 		}
 		try {
-			url = new URL(HOST+request); //The URL to post for an oauth token
+			URL url = new URL(HOST+request);
 			System.out.println("Communicating with -> " + HOST + request);
 			connection = (HttpURLConnection) url.openConnection();
 			System.out.println("Connection established");
 			
 			connection.setRequestMethod("GET");
-			connection.setDoOutput(true); //can write to stream
-			connection.setDoInput(true); //can receive reply stream
-			connection.setRequestProperty("Authorization","Bearer "+oAuthToken); //encode our secret and key
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Authorization","Bearer "+oAuthToken);
 			connection.connect();
 			Reader in = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
 			response = formatInputStream(in);
 			System.out.println("Response received: \""+connection.getResponseMessage() + "\", With code: "+connection.getResponseCode());
-			
-			//Build a bufferedreader to interpret the bufferedinputstream
-			
-		}catch(Exception e) {
+						
+		} catch(Exception e) {
 			System.out.println(e.getStackTrace());
 		}
 		return response;
 	}
 
+	/* JSONObject formatInputStream(Reader in)
+	 * Converts a read bufferedinputstream (inputstreamreader) into a JSON Object for the getResponse() method.
+	 * Exists to increase readability and reduce bloat.
+	 */
 	private JSONObject formatInputStream(Reader in) {
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -306,12 +364,18 @@ public class ProgramContainer {
 		return json;		
 	}
 	
+	/* setSecret(String key)
+	 * Sets the secret to a new secret. Unused. 
+	 */
 	public void setSecret(String key) {
 		this.secret = key;
 	}
 	
+	/* setKey(String key)
+	 * Sets the key to a new key. Unused. 
+	 */
 	public void setKey(String key) {
 		this.key = key;
-	}	
-	
+	}
+
 }

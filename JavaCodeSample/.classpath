@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry excluding="com/aWhere/javaSample/" kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/jonathansimmons/eclipse-workspace/JavaCodeSample/lib/json-20180813.jar"/>
+	<classpathentry kind="lib" path="lib/json-20180813.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
